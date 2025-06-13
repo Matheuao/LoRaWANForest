@@ -43,7 +43,7 @@
 /*!
  * Defines the application data transmission duty cycle in minutes
  */
-#define APP_TX_DUTYCYCLE                            5
+#define APP_TX_DUTYCYCLE                            3
 /*!
  * LoRaWAN Adaptive Data Rate
  * @note Please note that when ADR is enabled the end-device should be static
@@ -114,6 +114,9 @@ static uint8_t LORA_GetBatteryLevel(void);
 
 /* LoRa endNode send request*/
 static void Send(void *context);
+
+/* LoRa endNode send request*/
+static void send_sound_classifier(void *context);
 
 /* start the tx process*/
 static void LoraStartTx(TxEventType_t EventType);
@@ -215,7 +218,7 @@ int main(void)
       /*reset notification flag*/
       AppProcessRequest = LORA_RESET;
       /*Send*/
-      Send(NULL);
+      send_sound_classifier(NULL);
     }
     if (LoraMacProcessRequest == LORA_SET)
     {
@@ -377,6 +380,7 @@ static void send_sound_classifier(void *context){
   uint8_t class;
   float_t tmp;
   classifier_data data;
+  uint8_t batteryLevel;
 
   if (LORA_JoinStatus() != LORA_SET)
   {
@@ -403,17 +407,19 @@ static void send_sound_classifier(void *context){
   PRINTF("Latitude: %d\n", data.latitude);
   PRINTF("Latitude direction: %c\n", data.latitude_direction);
   PRINTF("Longitude: %d\n", data.longitude);
-  PRINTF("Latitude: %c\n", data.longitude_direction);
+  PRINTF("Longitude direction: %c\n", data.longitude_direction);
   PRINTF("Class: %d\n", data.class);
   
   tmp =(float_t) data.latitude;
-  latitude       = (uint16_t)((tmp/90)*65535);         /* in �C * 100 */
-  latitude_direction          = data.latitude_direction;            /* in hPa * 10 */
+  latitude       = (uint16_t)((tmp/90)*65535);    
+  latitude_direction          = data.latitude_direction;            
   
   tmp = (float_t) data.longitude;
   longitude = (uint16_t)((tmp/180)*65535); 
 
   class   = data.class;
+  batteryLevel = LORA_GetBatteryLevel(); /* 1 (very low) to 254 (fully charged) */
+
  
   uint32_t i = 0;
 
@@ -430,6 +436,10 @@ static void send_sound_classifier(void *context){
   AppData.Buff[i++] = longitude_direction;
   // Class
   AppData.Buff[i++] = class;
+  //Batery level
+  AppData.Buff[i++] = batteryLevel;
+
+  AppData.BuffSize = i;
 
   PrintHexBuffer(AppData.Buff, AppData.BuffSize);
    

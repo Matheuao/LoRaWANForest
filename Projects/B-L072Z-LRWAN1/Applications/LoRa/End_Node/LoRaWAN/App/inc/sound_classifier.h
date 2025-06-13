@@ -1,5 +1,7 @@
 #ifndef SOUND_CLASSIFIER_H
 #define SOUND_CLASSIFIER_H
+#include <stdint.h>
+
 
 typedef struct 
 {

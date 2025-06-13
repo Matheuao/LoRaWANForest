@@ -45,6 +45,7 @@ SRCS      += hw_gpio.c
 SRCS      += hw_rtc.c
 SRCS      += hw_spi.c
 SRCS      += vcom.c
+SRCS      += sound_classifier.c
 
 # C files from the /Core directory
 SRCS      += $(COMPONENT)_hal_msp.c

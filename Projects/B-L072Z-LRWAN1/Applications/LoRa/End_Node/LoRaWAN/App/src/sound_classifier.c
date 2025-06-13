@@ -1,6 +1,5 @@
 #include "sound_classifier.h"
 
-
 void read_gpio_sound_classifier(classifier_data *data){
 
     //rotina para ler valores do gpio
