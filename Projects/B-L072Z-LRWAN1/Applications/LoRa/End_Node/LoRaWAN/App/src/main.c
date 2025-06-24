@@ -375,8 +375,6 @@ static void send_sound_classifier(void *context){
    /* USER CODE BEGIN 3 */
   uint16_t latitude;
   uint16_t longitude;
-  uint8_t latitude_direction;
-  uint8_t longitude_direction;
   uint8_t class;
   float_t tmp;
   classifier_data data;
@@ -405,18 +403,11 @@ static void send_sound_classifier(void *context){
   read_gpio_sound_classifier(&data);
 
   PRINTF("Latitude: %d\n", data.latitude);
-  PRINTF("Latitude direction: %c\n", data.latitude_direction);
   PRINTF("Longitude: %d\n", data.longitude);
-  PRINTF("Longitude direction: %c\n", data.longitude_direction);
   PRINTF("Class: %d\n", data.class);
   
-  tmp =(float_t) data.latitude;
-  latitude       = (uint16_t)((tmp/90)*65535);    
-  latitude_direction          = data.latitude_direction;            
-  
-  tmp = (float_t) data.longitude;
-  longitude = (uint16_t)((tmp/180)*65535); 
-
+  latitude       = data.latitude;    
+  longitude = data.longitude; 
   class   = data.class;
   batteryLevel = LORA_GetBatteryLevel(); /* 1 (very low) to 254 (fully charged) */
 
@@ -427,13 +418,9 @@ static void send_sound_classifier(void *context){
   // Latitude
   AppData.Buff[i++] = (latitude >> 8) & 0xFF;
   AppData.Buff[i++] = latitude & 0xFF;
-  // Latitude direction
-  AppData.Buff[i++] = latitude_direction ;
   // Longitude
   AppData.Buff[i++] = (longitude >> 8) & 0xFF;
   AppData.Buff[i++] = longitude & 0xFF;
-  // Longitude direction
-  AppData.Buff[i++] = longitude_direction;
   // Class
   AppData.Buff[i++] = class;
   //Batery level
